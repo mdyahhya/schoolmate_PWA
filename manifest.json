@@ -1,0 +1,24 @@
+{
+  "name": "OpenSoftwares Admin",
+  "short_name": "OS Admin",
+  "description": "Master Multi-School Management & Educational Feed Portal by OpenSoftwares Pvt. Ltd.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0B1630",
+  "theme_color": "#0B1630",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/assets/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

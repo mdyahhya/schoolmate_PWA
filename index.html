@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>OpenSoftwares Admin — Master School Management & Educational Feed</title>
+  <meta name="description" content="Commercial Multi-School Management & Educational Feed Portal by OpenSoftwares Pvt. Ltd.">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#0B1329">
+  <link rel="icon" type="image/png" href="/assets/logo.png">
+  <link rel="apple-touch-icon" href="/assets/logo.png">
+  <link rel="stylesheet" href="/css/admin.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Password Gate Overlay -->
+  <div id="authOverlay" class="auth-overlay">
+    <div class="auth-card">
+      <img src="/assets/logo.png" alt="OpenSoftwares Logo" class="auth-logo-img">
+      <h2 class="auth-title">OpenSoftwares Admin</h2>
+      <p class="auth-subtitle">Master Multi-School Management Portal</p>
+      
+      <form id="authForm">
+        <div class="form-group">
+          <label class="form-label" for="adminPass">Master Access Passcode</label>
+          <input type="password" id="adminPass" class="form-input" placeholder="Enter admin password (e.g. #flutter)" required autocomplete="current-password">
+        </div>
+        <div id="authError" style="display:none; color:var(--status-danger); font-size:0.82rem; margin-bottom:12px; text-align:center;">
+          Incorrect Master Passcode.
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%; height:44px;">
+          Unlock Admin Portal
+        </button>
+      </form>
+
+      <div style="margin-top:20px; font-size:0.75rem; color:var(--text-muted);">
+        Enterprise Management &bull; <a href="https://opensoftwares.in" target="_blank" style="color:var(--accent-gold); text-decoration:none;">opensoftwares.in</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <a href="#" class="header-brand">
+      <img src="/assets/logo.png" alt="OpenSoftwares Logo" class="header-logo-img">
+      <div class="header-title-box">
+        <h1>OpenSoftwares Admin</h1>
+        <span class="header-badge">Master Cloud Console</span>
+      </div>
+    </a>
+    <div class="header-actions">
+      <button id="btnInstallPwa" class="btn btn-secondary btn-sm" style="display:none;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        Install App
+      </button>
+      <button id="btnLogout" class="btn btn-secondary btn-sm" title="Lock Console">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        Lock
+      </button>
+    </div>
+  </header>
+
+  <!-- App Navigation Tabs -->
+  <nav class="app-nav">
+    <div class="nav-tab active" data-tab="schools">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Schools &amp; Passcodes
+    </div>
+    <div class="nav-tab" data-tab="staff">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Staff &amp; Teachers
+    </div>
+    <div class="nav-tab" data-tab="students">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2.5 3.5 6 3.5s6-1.5 6-3.5v-5"/></svg>
+      Students &amp; Parents
+    </div>
+    <div class="nav-tab" data-tab="feed">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+      Educational Video Feed
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="main-content">
+
+    <!-- 1. SCHOOLS PANEL -->
+    <section id="panelSchools" class="section-panel active">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Enrolled Institutions &amp; Passcodes</h2>
+          <p class="section-desc">Manage school codes, ERP access passwords, and compressed logos.</p>
+        </div>
+        <button id="btnOpenAddSchool" class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add New School
+        </button>
+      </div>
+
+      <div id="schoolsGrid" class="cards-grid">
+        <div style="color:var(--text-secondary); padding:40px; text-align:center; grid-column:1/-1;">
+          Loading schools from Supabase cloud…
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. STAFF PANEL -->
+    <section id="panelStaff" class="section-panel">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Teachers &amp; Faculty Accounts</h2>
+          <p class="section-desc">Provision teacher logins, plain passwords, and class assignments.</p>
+        </div>
+        <button id="btnOpenAddStaff" class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Teacher / Staff
+        </button>
+      </div>
+
+      <div class="school-filter-bar">
+        <span style="font-size:0.85rem; color:var(--text-secondary); font-weight:600;">Filter by School:</span>
+        <select id="selectSchoolStaff" class="form-select" style="max-width:320px;"></select>
+      </div>
+
+      <div class="data-table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Teacher Name</th>
+              <th>Designation</th>
+              <th>Email</th>
+              <th>Plain Password</th>
+              <th>Assigned Class</th>
+              <th>Subjects</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="staffTableBody">
+            <tr><td colspan="7" style="text-align:center; padding:30px;">Select a school to view staff roster.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 3. STUDENTS PANEL -->
+    <section id="panelStudents" class="section-panel">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Student Roster &amp; Parent Logins</h2>
+          <p class="section-desc">Students enrolled across classes (parents login via Class + Section + Roll Number).</p>
+        </div>
+        <button id="btnOpenAddStudent" class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add New Student
+        </button>
+      </div>
+
+      <div class="school-filter-bar">
+        <span style="font-size:0.85rem; color:var(--text-secondary); font-weight:600;">Filter by School:</span>
+        <select id="selectSchoolStudents" class="form-select" style="max-width:320px;"></select>
+      </div>
+
+      <div class="data-table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Roll</th>
+              <th>Student Name</th>
+              <th>Class &amp; Sec</th>
+              <th>Admission No</th>
+              <th>Guardian Name</th>
+              <th>Parent Phone</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="studentsTableBody">
+            <tr><td colspan="7" style="text-align:center; padding:30px;">Select a school to view enrolled students.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 4. EDUCATIONAL FEED (YOUTUBE CURATOR) PANEL -->
+    <section id="panelFeed" class="section-panel">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Educational Video Feed Curator</h2>
+          <p class="section-desc">Add YouTube links with automatic thumbnail verification and class targeting.</p>
+        </div>
+        <button id="btnOpenAddVideo" class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Curate YouTube Video
+        </button>
+      </div>
+
+      <div class="school-filter-bar">
+        <span style="font-size:0.85rem; color:var(--text-secondary); font-weight:600;">Target School:</span>
+        <select id="selectSchoolFeed" class="form-select" style="max-width:320px;"></select>
+      </div>
+
+      <div id="feedGrid" class="cards-grid">
+        <div style="color:var(--text-secondary); padding:40px; text-align:center; grid-column:1/-1;">
+          Loading video feed…
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: ADD SCHOOL -->
+  <div id="modalAddSchool" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Enroll New School</h3>
+        <button class="modal-close" data-close="modalAddSchool">&times;</button>
+      </div>
+      <form id="formAddSchool">
+        <div class="form-group">
+          <label class="form-label">School Name</label>
+          <input type="text" id="schoolName" class="form-input" placeholder="e.g. Model High School" required>
+        </div>
+        <div class="form-group" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div>
+            <label class="form-label">School Code (Unique)</label>
+            <input type="text" id="schoolCode" class="form-input" placeholder="e.g. YB-003" required style="font-family:var(--font-mono); text-transform:uppercase;">
+          </div>
+          <div>
+            <label class="form-label">ERP Passcode (Password)</label>
+            <input type="text" id="schoolPasscode" class="form-input" placeholder="e.g. admin123" required value="admin123" style="font-family:var(--font-mono);">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">School Logo (File Upload or Image URL)</label>
+          <input type="file" id="schoolLogoFile" class="form-input" accept="image/*" style="margin-bottom:6px;">
+          <input type="text" id="schoolLogoUrl" class="form-input" placeholder="Or paste existing logo URL">
+        </div>
+        <div class="form-group">
+          <label class="form-label">School Address</label>
+          <input type="text" id="schoolAddress" class="form-input" placeholder="Full street address and city">
+        </div>
+        <div class="form-group" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div>
+            <label class="form-label">Contact Phone</label>
+            <input type="text" id="schoolContact" class="form-input" placeholder="+91 99999 99999">
+          </div>
+          <div>
+            <label class="form-label">Contact Email</label>
+            <input type="email" id="schoolEmail" class="form-input" placeholder="office@school.in">
+          </div>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+          <button type="button" class="btn btn-secondary" data-close="modalAddSchool">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btnSaveSchool">Save School</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD STAFF -->
+  <div id="modalAddStaff" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Add Teacher / Staff Member</h3>
+        <button class="modal-close" data-close="modalAddStaff">&times;</button>
+      </div>
+      <form id="formAddStaff">
+        <div class="form-group">
+          <label class="form-label">Select School</label>
+          <select id="staffSchoolId" class="form-select" required></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" id="staffFullName" class="form-input" placeholder="e.g. Mr. Rajesh Sharma" required>
+        </div>
+        <div class="form-group" style="display:grid; grid-template-columns:1.2fr 1fr; gap:12px;">
+          <div>
+            <label class="form-label">Staff Login Email</label>
+            <input type="email" id="staffEmail" class="form-input" placeholder="teacher@school.in" required>
+          </div>
+          <div>
+            <label class="form-label">Plain Password</label>
+            <input type="text" id="staffPassword" class="form-input" value="teacher123" required style="font-family:var(--font-mono);">
+          </div>
+        </div>
+        <div class="form-group" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div>
+            <label class="form-label">Designation</label>
+            <input type="text" id="staffDesignation" class="form-input" placeholder="e.g. Senior Class Teacher">
+          </div>
+          <div>
+            <label class="form-label">Phone Number</label>
+            <input type="text" id="staffPhone" class="form-input" placeholder="+91 98765 43210">
+          </div>
+        </div>
+        <div class="form-group" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div>
+            <label class="form-label">Assigned Class</label>
+            <input type="text" id="staffClass" class="form-input" placeholder="e.g. 10" required>
+          </div>
+          <div>
+            <label class="form-label">Assigned Section</label>
+            <input type="text" id="staffSection" class="form-input" placeholder="e.g. A" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Subjects Taught (comma separated)</label>
+          <input type="text" id="staffSubjects" class="form-input" placeholder="e.g. Mathematics, Science">
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+          <button type="button" class="btn btn-secondary" data-close="modalAddStaff">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btnSaveStaff">Save Teacher Account</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD STUDENT -->
+  <div id="modalAddStudent" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Enroll Student Roster</h3>
+        <button class="modal-close" data-close="modalAddStudent">&times;</button>
+      </div>
+      <form id="formAddStudent">
+        <div class="form-group">
+          <label class="form-label">Select School</label>
+          <select id="studentSchoolId" class="form-select" required></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Student Full Name</label>
+          <input type="text" id="studentFullName" class="form-input" placeholder="e.g. Aarav Sharma" required>
+        </div>
+        <div class="form-group" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+          <div>
+            <label class="form-label">Class</label>
+            <input type="text" id="studentClass" class="form-input" placeholder="e.g. 10" required>
+          </div>
+          <div>
+            <label class="form-label">Section</label>
+            <input type="text" id="studentSection" class="form-input" placeholder="e.g. A" required>
+          </div>
+          <div>
+            <label class="form-label">Roll Number</label>
+            <input type="text" id="studentRoll" class="form-input" placeholder="e.g. 01" required>
+          </div>
+        </div>
+        <div class="form-group" style="display:grid; grid-template-columns:1.2fr 1fr; gap:12px;">
+          <div>
+            <label class="form-label">Admission Number</label>
+            <input type="text" id="studentAdmissionNo" class="form-input" placeholder="e.g. ADM-2026-01">
+          </div>
+          <div>
+            <label class="form-label">Blood Group</label>
+            <select id="studentBloodGroup" class="form-select">
+              <option value="O+">O+</option><option value="O-">O-</option>
+              <option value="A+">A+</option><option value="A-">A-</option>
+              <option value="B+">B+</option><option value="B-">B-</option>
+              <option value="AB+">AB+</option><option value="AB-">AB-</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div>
+            <label class="form-label">Parent / Guardian Name</label>
+            <input type="text" id="studentGuardianName" class="form-input" placeholder="e.g. Vikram Sharma">
+          </div>
+          <div>
+            <label class="form-label">Guardian Phone</label>
+            <input type="text" id="studentGuardianPhone" class="form-input" placeholder="+91 98765 43210">
+          </div>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+          <button type="button" class="btn btn-secondary" data-close="modalAddStudent">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btnSaveStudent">Save Student</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD EDUCATIONAL VIDEO (YOUTUBE CURATOR) -->
+  <div id="modalAddVideo" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Curate Educational Video</h3>
+        <button class="modal-close" data-close="modalAddVideo">&times;</button>
+      </div>
+      <form id="formAddVideo">
+        <div class="form-group">
+          <label class="form-label">Select School</label>
+          <select id="feedSchoolId" class="form-select" required></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">YouTube Video Link</label>
+          <input type="url" id="feedYoutubeUrl" class="form-input" placeholder="https://www.youtube.com/watch?v=... or https://youtu.be/..." required>
+          <small id="youtubeVerifyStatus" style="font-size:0.75rem; color:var(--text-muted); display:block; margin-top:4px;">Paste link to auto-verify thumbnail and playable status</small>
+        </div>
+
+        <!-- Live Thumbnail Preview -->
+        <div id="thumbnailPreviewContainer" style="display:none; margin-bottom:16px;">
+          <label class="form-label">Verified Thumbnail Preview</label>
+          <div class="video-preview-box" style="height:160px;">
+            <img id="verifiedThumbImg" src="" alt="Thumbnail Preview" class="video-thumb-img">
+            <span class="video-cat-badge">Verified Playable</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Lesson / Video Title</label>
+          <input type="text" id="feedTitle" class="form-input" placeholder="e.g. Solar System Explained for Kids" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Teacher Description / Instructions</label>
+          <textarea id="feedDesc" class="form-textarea" placeholder="Explain the concepts or instructions for students to take notes..."></textarea>
+        </div>
+        <div class="form-group" style="display:grid; grid-template-columns:1.2fr 1fr; gap:12px;">
+          <div>
+            <label class="form-label">Category</label>
+            <select id="feedCategory" class="form-select">
+              <option value="Science & Astronomy">Science & Astronomy</option>
+              <option value="Mathematics & Logic">Mathematics & Logic</option>
+              <option value="Language & Arts">Language & Arts</option>
+              <option value="General Knowledge">General Knowledge</option>
+              <option value="STEM Experiments">STEM Experiments</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Target Class</label>
+            <select id="feedClassTarget" class="form-select">
+              <option value="all">All Classes</option>
+              <option value="10">Class 10</option>
+              <option value="9">Class 9</option>
+              <option value="8">Class 8</option>
+              <option value="Primary">Primary (1-5)</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+          <button type="button" class="btn btn-secondary" data-close="modalAddVideo">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btnSaveVideo">Publish to School Feed</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- App Footer -->
+  <footer class="app-footer">
+    <div>
+      <strong>OpenSoftwares Admin Console</strong> &bull; Master School &amp; Feed Management
+    </div>
+    <div style="margin-top:4px;">
+      Powered by <a href="https://opensoftwares.in" target="_blank">OpenSoftwares Pvt. Ltd.</a> &mdash; Solapur &amp; Gulbarga &bull; All Rights Reserved
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/js/supabase-client.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(console.warn);
+    }
+  </script>
+</body>
+</html>
