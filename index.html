@@ -81,6 +81,10 @@
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
       Educational Video Feed
     </div>
+    <div class="nav-tab" data-tab="fleet">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+      Fleet &amp; Buses
+    </div>
   </nav>
 
   <!-- Main Container -->
@@ -204,6 +208,54 @@
         <div style="color:var(--text-secondary); padding:40px; text-align:center; grid-column:1/-1;">
           Loading video feed…
         </div>
+      </div>
+    </section>
+
+    <!-- 5. FLEET & BUSES PANEL -->
+    <section id="panelFleet" class="section-panel">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Fleet &amp; Bus Management</h2>
+          <p class="section-desc">Register buses, assign drivers with mobile login passcodes, and set school transit operating hours.</p>
+        </div>
+        <button id="btnOpenAddBus" class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add New Bus &amp; Driver
+        </button>
+      </div>
+
+      <!-- School Selector & Transit Timing Bar -->
+      <div style="display:grid; grid-template-columns:1fr 1.5fr; gap:16px; margin-bottom:20px;">
+        <div class="school-filter-bar" style="margin-bottom:0;">
+          <span style="font-size:0.85rem; color:var(--text-secondary); font-weight:600;">Select School:</span>
+          <select id="selectSchoolFleet" class="form-select" style="max-width:300px;"></select>
+        </div>
+        <div class="school-filter-bar" style="margin-bottom:0; display:flex; align-items:center; justify-content:space-between; gap:12px;">
+          <div style="font-size:0.85rem; color:var(--text-secondary);">
+            <strong style="color:var(--text-primary);">School Transit Hours:</strong>
+            <span id="transitHoursDisplay" style="margin-left:6px; font-family:var(--font-mono); color:var(--accent-gold);">07:30 AM &ndash; 02:00 PM</span>
+          </div>
+          <button id="btnUpdateTransitHours" class="btn btn-secondary btn-sm">Edit Timings</button>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <table class="data-table" id="tableBuses">
+          <thead>
+            <tr>
+              <th>Bus / Van Identifier</th>
+              <th>Assigned Route &amp; Stops</th>
+              <th>Driver Name</th>
+              <th>Phone Number</th>
+              <th>Passcode / PIN</th>
+              <th>Transit Hours</th>
+              <th style="text-align:right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:30px;">Select school to load fleet.</td></tr>
+          </tbody>
+        </table>
       </div>
     </section>
 
@@ -439,6 +491,56 @@
         <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
           <button type="button" class="btn btn-secondary" data-close="modalAddVideo">Cancel</button>
           <button type="submit" class="btn btn-primary" id="btnSaveVideo">Publish to School Feed</button>
+        </div>
+  <!-- MODAL: ADD BUS & DRIVER -->
+  <div id="modalAddBus" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Register Bus &amp; Assign Driver</h3>
+        <button class="modal-close" data-close="modalAddBus">&times;</button>
+      </div>
+      <form id="formAddBus">
+        <div class="form-group">
+          <label class="form-label">Select School</label>
+          <select id="busSchoolId" class="form-select" required></select>
+        </div>
+        <div class="form-group" style="display:grid; grid-template-columns:1.2fr 1fr; gap:12px;">
+          <div>
+            <label class="form-label">Bus / Vehicle Identifier</label>
+            <input type="text" id="busNumber" class="form-input" placeholder="e.g. Bus 01 - MH-13-AZ-1001" required>
+          </div>
+          <div>
+            <label class="form-label">Driver Login Passcode / PIN</label>
+            <input type="text" id="busDriverPassword" class="form-input" value="1234" required style="font-family:var(--font-mono);">
+          </div>
+        </div>
+        <div class="form-group" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div>
+            <label class="form-label">Driver Full Name</label>
+            <input type="text" id="busDriverName" class="form-input" placeholder="e.g. Ramesh Patil" required>
+          </div>
+          <div>
+            <label class="form-label">Driver Phone Number</label>
+            <input type="text" id="busDriverPhone" class="form-input" placeholder="e.g. 9876543210" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Assigned Route &amp; Stop Details</label>
+          <input type="text" id="busRouteName" class="form-input" placeholder="e.g. Route 1: Solapur Station -> Ashok Chowk -> Campus" required>
+        </div>
+        <div class="form-group" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div>
+            <label class="form-label">Morning Transit Start Time</label>
+            <input type="text" id="busStartTime" class="form-input" value="07:30 AM" required>
+          </div>
+          <div>
+            <label class="form-label">Afternoon Transit End Time</label>
+            <input type="text" id="busEndTime" class="form-input" value="02:00 PM" required>
+          </div>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+          <button type="button" class="btn btn-secondary" data-close="modalAddBus">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btnSaveBus">Register Bus Fleet</button>
         </div>
       </form>
     </div>

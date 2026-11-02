@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentStaff = [];
   let currentStudents = [];
   let currentFeed = [];
+  let currentBuses = [];
   let verifiedYoutubeData = null;
   let deferredPrompt = null;
 
@@ -22,7 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
     schools: document.getElementById('panelSchools'),
     staff: document.getElementById('panelStaff'),
     students: document.getElementById('panelStudents'),
-    feed: document.getElementById('panelFeed')
+    feed: document.getElementById('panelFeed'),
+    fleet: document.getElementById('panelFleet')
   };
 
   // -------------------------------------------------------------
@@ -106,6 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
     await loadStaff();
     await loadStudents();
     await loadFeed();
+    await loadBuses();
   }
 
   // Load Schools
@@ -168,11 +171,13 @@ document.addEventListener('DOMContentLoaded', () => {
   function populateSchoolSelects() {
     const selects = [
       document.getElementById('selectSchoolStaff'),
-      document.getElementById('selectSchoolStudents'),
+      document.getElementById('selectSchoolStudent'),
       document.getElementById('selectSchoolFeed'),
+      document.getElementById('selectSchoolFleet'),
       document.getElementById('staffSchoolId'),
       document.getElementById('studentSchoolId'),
-      document.getElementById('feedSchoolId')
+      document.getElementById('feedSchoolId'),
+      document.getElementById('busSchoolId')
     ];
 
     selects.forEach((sel) => {
@@ -563,6 +568,167 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.textContent = 'Publish to School Feed';
     }
   });
+
+  // -------------------------------------------------------------
+  // 7.5 FLEET & BUS MANAGEMENT
+  // -------------------------------------------------------------
+  const selectSchoolFleet = document.getElementById('selectSchoolFleet');
+  if (selectSchoolFleet) {
+    selectSchoolFleet.addEventListener('change', (e) => {
+      loadBuses(e.target.value);
+    });
+  }
+
+  async function loadBuses(schoolId) {
+    const table = document.getElementById('tableBuses');
+    if (!table) return;
+    const tbody = table.querySelector('tbody');
+    const sel = document.getElementById('selectSchoolFleet');
+    const selectedSchool = schoolId || (sel ? sel.value : null);
+
+    if (!selectedSchool) {
+      if (currentSchools.length > 0 && sel) {
+        sel.value = currentSchools[0].id;
+        return loadBuses(currentSchools[0].id);
+      }
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:30px;">Select school to load fleet.</td></tr>';
+      return;
+    }
+
+    try {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:30px;">Loading fleet…</td></tr>';
+      currentBuses = await supabase.getBuses(selectedSchool);
+
+      // Update transit hours display
+      const hoursDisplay = document.getElementById('transitHoursDisplay');
+      if (hoursDisplay && currentBuses && currentBuses.length > 0) {
+        hoursDisplay.textContent = `${currentBuses[0].school_start_time || '07:30 AM'} – ${currentBuses[0].school_end_time || '02:00 PM'}`;
+      }
+
+      if (!currentBuses || currentBuses.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:30px;">No buses or drivers registered for this school yet. Click "Add New Bus & Driver" above!</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = currentBuses.map((b) => `
+        <tr>
+          <td><strong style="color:var(--accent-gold); font-family:var(--font-mono);">${escapeHtml(b.bus_number)}</strong></td>
+          <td><span style="font-size:0.85rem; color:var(--text-secondary);">${escapeHtml(b.route_name)}</span></td>
+          <td><strong>${escapeHtml(b.driver_name)}</strong></td>
+          <td><span style="font-family:var(--font-mono);">${escapeHtml(b.driver_phone)}</span></td>
+          <td><code style="background:var(--bg-input); padding:2px 8px; border-radius:4px; color:var(--accent-gold);">${escapeHtml(b.driver_password)}</code></td>
+          <td><span style="font-size:0.8rem; color:var(--text-muted);">${escapeHtml(b.school_start_time || '07:30 AM')} – ${escapeHtml(b.school_end_time || '02:00 PM')}</span></td>
+          <td style="text-align:right;">
+            <button class="btn btn-secondary btn-sm" style="color:var(--status-danger);" onclick="deleteBus('${b.id}')">Delete</button>
+          </td>
+        </tr>
+      `).join('');
+    } catch (err) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--status-danger); padding:30px;">Error loading fleet: ${err.message}</td></tr>`;
+    }
+  }
+
+  // Open modal
+  const btnOpenAddBus = document.getElementById('btnOpenAddBus');
+  const modalAddBus = document.getElementById('modalAddBus');
+  if (btnOpenAddBus && modalAddBus) {
+    btnOpenAddBus.addEventListener('click', () => {
+      populateSchoolSelects();
+      const selFleet = document.getElementById('selectSchoolFleet');
+      if (selFleet && selFleet.value) {
+        document.getElementById('busSchoolId').value = selFleet.value;
+      }
+      modalAddBus.classList.add('active');
+    });
+  }
+
+  // Add Bus Form
+  const formAddBus = document.getElementById('formAddBus');
+  if (formAddBus) {
+    formAddBus.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('btnSaveBus');
+      btn.disabled = true;
+      btn.textContent = 'Registering…';
+
+      try {
+        const schoolId = document.getElementById('busSchoolId').value;
+        const busNumber = document.getElementById('busNumber').value.trim();
+        const driverName = document.getElementById('busDriverName').value.trim();
+        const driverPhone = document.getElementById('busDriverPhone').value.trim();
+        const driverPassword = document.getElementById('busDriverPassword').value.trim();
+        const routeName = document.getElementById('busRouteName').value.trim();
+        const startTime = document.getElementById('busStartTime').value.trim();
+        const endTime = document.getElementById('busEndTime').value.trim();
+
+        await supabase.createBus({
+          school_id: schoolId,
+          bus_number: busNumber,
+          driver_name: driverName,
+          driver_phone: driverPhone,
+          driver_password: driverPassword,
+          route_name: routeName,
+          school_start_time: startTime,
+          school_end_time: endTime
+        });
+
+        alert(`Bus & Driver registered successfully!\nDriver Phone: ${driverPhone}\nDriver Passcode: ${driverPassword}`);
+        modalAddBus.classList.remove('active');
+        formAddBus.reset();
+        await loadBuses(schoolId);
+      } catch (err) {
+        alert('Failed to register bus: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Register Bus Fleet';
+      }
+    });
+  }
+
+  // Delete Bus
+  window.deleteBus = async (id) => {
+    if (!confirm('Are you sure you want to remove this bus and driver?')) return;
+    try {
+      await supabase.deleteBus(id);
+      const sel = document.getElementById('selectSchoolFleet');
+      await loadBuses(sel ? sel.value : null);
+    } catch (err) {
+      alert('Failed to delete bus: ' + err.message);
+    }
+  };
+
+  // Update Transit Hours
+  const btnUpdateTransitHours = document.getElementById('btnUpdateTransitHours');
+  if (btnUpdateTransitHours) {
+    btnUpdateTransitHours.addEventListener('click', async () => {
+      const sel = document.getElementById('selectSchoolFleet');
+      const schoolId = sel ? sel.value : null;
+      if (!schoolId) return alert('Please select a school first.');
+
+      const newStart = prompt('Enter Morning Pickup Transit Start Time:', '07:30 AM');
+      if (!newStart) return;
+      const newEnd = prompt('Enter Afternoon Drop Transit End Time:', '02:00 PM');
+      if (!newEnd) return;
+
+      try {
+        // Update all buses for this school with new timing
+        if (currentBuses && currentBuses.length > 0) {
+          for (const b of currentBuses) {
+            await supabase.updateBus(b.id, {
+              school_start_time: newStart,
+              school_end_time: newEnd
+            });
+          }
+        }
+        const hoursDisplay = document.getElementById('transitHoursDisplay');
+        if (hoursDisplay) hoursDisplay.textContent = `${newStart} – ${newEnd}`;
+        alert(`School Transit Operating Hours updated to: ${newStart} – ${newEnd}`);
+        await loadBuses(schoolId);
+      } catch (err) {
+        alert('Failed to update timings: ' + err.message);
+      }
+    });
+  }
 
   // -------------------------------------------------------------
   // 8. PWA INSTALL PROMPT

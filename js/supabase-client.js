@@ -148,5 +148,32 @@ const supabase = {
     }
 
     return `${SUPABASE_CONFIG.url}/storage/v1/object/public/school-logos/${path}`;
+  },
+
+  // Buses & Fleet
+  async getBuses(schoolId) {
+    let query = '/buses?select=*&order=created_at.desc';
+    if (schoolId) query += `&school_id=eq.${schoolId}`;
+    return this.request(query);
+  },
+
+  async createBus(busData) {
+    return this.request('/buses', {
+      method: 'POST',
+      body: JSON.stringify(busData)
+    });
+  },
+
+  async updateBus(id, updates) {
+    return this.request(`/buses?id=eq.${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(updates)
+    });
+  },
+
+  async deleteBus(id) {
+    return this.request(`/buses?id=eq.${id}`, {
+      method: 'DELETE'
+    });
   }
 };
